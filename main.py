@@ -1,19 +1,17 @@
+import asyncio
+import time
 from telegram import Bot
 from config import TOKEN, CHAT_ID
-import time
 
-print("TOKEN existe?", TOKEN is not None)
-print("CHAT_ID:", CHAT_ID)
-
-try:
+async def enviar_teste():
     bot = Bot(token=TOKEN)
-    bot.send_message(
+    await bot.send_message(
         chat_id=CHAT_ID,
-        text="✅ Teste Telegram funcionando!"
+        text="✅ Agora sim! Bot conectado ao Telegram."
     )
     print("Mensagem enviada com sucesso")
-except Exception as erro:
-    print("ERRO AO ENVIAR:", erro)
+
+asyncio.run(enviar_teste())
 
 while True:
     time.sleep(60)
