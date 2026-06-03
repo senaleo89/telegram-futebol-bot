@@ -11,4 +11,6 @@ LIGAS_PERMITIDAS = [
     140,  # La Liga
     78,   # Bundesliga
     1, # Copa do Mundo
+13,  # Libertadores
+2,   # Champions League
 ]
