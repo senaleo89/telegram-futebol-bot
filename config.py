@@ -9,5 +9,6 @@ LIGAS_PERMITIDAS = [
     72,   # Brasileirão Série B
     39,   # Premier League
     140,  # La Liga
-    78    # Bundesliga
-1,    # Copa do Mundo]
+    78,   # Bundesliga
+    1, # Copa do Mundo
+]
