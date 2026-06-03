@@ -31,7 +31,7 @@ async def verificar_jogos(app):
     }
 
     url = "https://v3.football.api-sports.io/fixtures?live=all"
-
+url_stats = "https://v3.football.api-sports.io/fixtures/statistics?fixture="
     try:
 
         resposta = requests.get(
@@ -50,7 +50,13 @@ async def verificar_jogos(app):
                 continue
 
             fixture_id = jogo["fixture"]["id"]
+stats_resposta = requests.get(
+    url_stats + str(fixture_id),
+    headers=headers,
+    timeout=30
+)
 
+stats_dados = stats_resposta.json()
             minuto = jogo["fixture"]["status"]["elapsed"] or 0
 
             if minuto < 20:
@@ -71,8 +77,40 @@ async def verificar_jogos(app):
                 continue
 
             liga = jogo["league"]["name"]
+escanteios_casa = 0
+escanteios_fora = 0
 
+finalizacoes_casa = 0
+finalizacoes_fora = 0
+
+try:
+
+    estatisticas = stats_dados["response"]
+
+    for time_stats in estatisticas:
+
+        team_name = time_stats["team"]["name"]
+
+        for stat in time_stats["statistics"]:
+
+            if stat["type"] == "Corner Kicks":
+
+                if team_name == casa:
+                    escanteios_casa = stat["value"] or 0
+                else:
+                    escanteios_fora = stat["value"] or 0
+
+            if stat["type"] == "Shots on Goal":
+
+                if team_name == casa:
+                    finalizacoes_casa = stat["value"] or 0
+                else:
+                    finalizacoes_fora = stat["value"] or 0
+
+except:
+    pass
             mensagem = f"""
+mensagem = f"""
 🚨 ALERTA AO VIVO
 
 🏆 {liga}
@@ -83,6 +121,14 @@ async def verificar_jogos(app):
 {gols_casa} x {gols_fora}
 
 ⏱️ {minuto}'
+
+📈 Estatísticas
+
+🎯 Chutes no gol:
+{finalizacoes_casa} x {finalizacoes_fora}
+
+🚩 Escanteios:
+{escanteios_casa} x {escanteios_fora}
 
 🔥 Time da casa está perdendo
 """
