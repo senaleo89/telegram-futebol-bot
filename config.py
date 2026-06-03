@@ -10,5 +10,4 @@ LIGAS_PERMITIDAS = [
     39,   # Premier League
     140,  # La Liga
     78    # Bundesliga
-]
-1,    # Copa do Mundo
+1,    # Copa do Mundo]
