@@ -1,19 +1,30 @@
 import asyncio
 import requests
-from telegram import Bot
-from config import TOKEN, CHAT_ID, API_KEY, LIGAS_PERMITIDAS
 
-bot = Bot(token=TOKEN)
+from telegram import Update
+from telegram.ext import (
+    Application,
+    CommandHandler,
+    ContextTypes
+)
+
+from config import TOKEN, CHAT_ID, API_KEY, LIGAS_PERMITIDAS
 
 alertas = set()
 
-async def enviar(texto):
-    await bot.send_message(
-        chat_id=CHAT_ID,
-        text=texto
+async def status(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    await update.message.reply_text(
+        "✅ Bot online e monitorando partidas!"
     )
 
-async def verificar_jogos():
+async def teste(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    await update.message.reply_text(
+        "✅ Teste realizado com sucesso!"
+    )
+
+async def verificar_jogos(app):
 
     headers = {
         "x-apisports-key": API_KEY
@@ -76,23 +87,38 @@ async def verificar_jogos():
 🔥 Time da casa está perdendo
 """
 
-            await enviar(mensagem)
-
-            print("Alerta enviado")
+            await app.bot.send_message(
+                chat_id=CHAT_ID,
+                text=mensagem
+            )
 
             alertas.add(chave)
 
     except Exception as erro:
         print("ERRO:", erro)
 
-async def main():
-
-    print("Bot monitorando partidas...")
+async def monitorar(app):
 
     while True:
 
-        await verificar_jogos()
+        await verificar_jogos(app)
 
         await asyncio.sleep(60)
 
-asyncio.run(main())
+async def iniciar(app):
+
+    print("Bot iniciado!")
+
+    asyncio.create_task(monitorar(app))
+
+def main():
+
+    app = Application.builder().token(TOKEN).post_init(iniciar).build()
+
+    app.add_handler(CommandHandler("status", status))
+
+    app.add_handler(CommandHandler("teste", teste))
+
+    app.run_polling()
+
+main()
